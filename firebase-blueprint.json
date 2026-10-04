@@ -1,0 +1,23 @@
+{
+  "entities": {
+    "Message": {
+      "title": "Message",
+      "description": "A single chat message",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "username": { "type": "string" },
+        "phone": { "type": "string" },
+        "chatId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["text", "username", "phone", "chatId", "timestamp"]
+    }
+  },
+  "firestore": {
+    "messages/{messageId}": {
+      "schema": "Message",
+      "description": "Collection of all chat messages"
+    }
+  }
+}

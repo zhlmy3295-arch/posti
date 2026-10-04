@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Messages collection
+    match /messages/{messageId} {
+      // For now, allow public access since we are using custom phone login.
+      // In a production app, you should use Firebase Auth.
+      allow read: if true;
+      allow create: if isValidMessage(request.resource.data);
+    }
+
+    function isValidMessage(data) {
+      return data.text is string && data.text.size() <= 1000 &&
+             data.username is string && data.username.size() <= 50 &&
+             data.phone is string && data.phone.size() <= 20 &&
+             data.chatId is string && data.chatId.size() <= 100 &&
+             data.timestamp != null;
+    }
+  }
+}

@@ -1,0 +1,75 @@
+function ChatSelection({
+  username,
+  phone,
+  profilePic,
+  onJoinChat,
+  onLeave,
+  onOpenProfile,
+  onOpenSettings,
+}: {
+  username: string;
+  phone: string;
+  profilePic: string | null;
+  onJoinChat: (targetPhones: string[]) => void;
+  onLeave: () => void;
+  onOpenProfile: () => void;
+  onOpenSettings?: () => void;
+}) {
+  const [targetInputs, setTargetInputs] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(`saved_numbers_${phone}`);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  });
+  const [currentInput, setCurrentInput] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem(
+      `saved_numbers_${phone}`,
+      JSON.stringify(targetInputs),
+    );
+  }, [targetInputs, phone]);
+
+  const handleAddNumber = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchError(null);
+    const trimmed = currentInput.trim();
+    if (trimmed && !targetInputs.includes(trimmed)) {
+      try {
+        const userRef = ref(db, `users/${trimmed}`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          setTargetInputs([...targetInputs, trimmed]);
+          setCurrentInput("");
+        } else {
+          setSearchError("هذا الرقم غير مسجل في التطبيق.");
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        setSearchError("حدث خطأ أثناء البحث عن الرقم.");
+      }
+    } else if (targetInputs.includes(trimmed)) {
+      setSearchError("هذا الرقم مضاف بالفعل.");
+    }
+  };
+
+  const handleRemoveNumber = (num: string) => {
+    setTargetInputs(targetInputs.filter((n) => n !== num));
+  };
+
+  const handleSubmit = () => {
+    if (targetInputs.length > 0) {
+      onJoinChat(targetInputs);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-slate-950 text-slate-200 font-sans overflow-hidden">
+      <header className="h-16 flex-shrink-0 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 flex items-center px-6 sm:px-8 justify-between z-10">
