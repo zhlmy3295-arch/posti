@@ -249,7 +249,7 @@ export default function App() {
             className="text-3xl font-bold text-white text-center mb-2 tracking-tight"
             dir="auto"
           >
-            Pulse Chat
+            Posti
           </h1>
           <p className="text-slate-400 text-center mb-8" dir="auto">
             {isSignUpMode ? "انشاء حساب جديد (Create Account)" : "تسجيل الدخول (Login)"}
@@ -650,7 +650,7 @@ function ChatSelection({
           </div>
           <div>
             <h1 className="text-lg font-bold text-white tracking-wide leading-tight">
-              Pulse Posts
+              Posti
             </h1>
             <p className="text-[10px] sm:text-xs text-slate-500 font-medium italic">
               Connected to Firebase RTDB
